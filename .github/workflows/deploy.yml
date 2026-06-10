@@ -1,11 +1,22 @@
+
+🩹 Fix: replace the workflow file (2 minutes)
+Step 1 — Open the workflow file on GitHub
+Go to: https://github.com/last-minute-app/dashboard/blob/main/.github/workflows/deploy.yml
+
+Then click the pencil ✏️ icon in the top-right of the file viewer (says "Edit this file").
+
+Step 2 — Select everything and replace
+Click inside the editor
+Press Ctrl+A (Windows) or Cmd+A (Mac) to select all
+Press Delete
+Paste the new content below:
 name: Build and deploy dashboard to GitHub Pages
 
-# Runs on every push to main. Builds the Vite SPA and publishes the
-# static `dist/` folder to GitHub Pages.
+# Standalone-repo layout: this repo contains ONLY the dashboard.
+# Build the Vite SPA, publish dist/ to GitHub Pages.
 #
-# When the repo is `last-minute-app/dashboard`, GH Pages will serve at
-#   https://last-minute-app.github.io/dashboard/
-# which is exactly what `vite.config.ts` (base: '/dashboard/') expects.
+# Repo: last-minute-app/dashboard
+# Live URL: https://last-minute-app.github.io/dashboard/
 
 on:
   push:
@@ -30,21 +41,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
 
-      - name: Install
-        run: yarn install --frozen-lockfile
+      - name: Install dependencies
+        # No --frozen-lockfile: lets yarn generate yarn.lock if it's
+        # missing (e.g. when the repo was initialised via GH browser
+        # upload and the lockfile got skipped by the drag-and-drop).
+        run: yarn install
 
       - name: Build
         env:
-          # Override at Settings → Variables → Actions → VITE_API_BASE_URL
-          # if/when the backend moves to Railway. Default = Emergent preview.
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://expire-now.preview.emergentagent.com' }}
         run: yarn build
 
       - name: SPA deep-link fallback
-        # GH Pages serves 404.html for unknown paths; we copy index.html
-        # on top so React Router takes over once the SPA loads.
         run: cp dist/index.html dist/404.html
 
       - uses: actions/configure-pages@v5
