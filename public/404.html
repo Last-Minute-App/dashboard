@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting…</title>
+  <script>
+    // GitHub Pages SPA deep-link workaround. When a user visits a deep
+    // route (e.g. /dashboard/partner/offers), GH Pages returns 404
+    // because no static file exists at that path. We catch the 404,
+    // rewrite the URL into a query-string the SPA can decode in
+    // main.tsx, and bounce to index.html which loads the React app.
+    var segments = 1; // matches the /dashboard/ base path
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + segments).join('/') + '/?p=/' +
+      l.pathname.split('/').slice(1 + segments).join('/').replace(/&/g, '~and~') +
+      (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+<body></body>
+</html>
