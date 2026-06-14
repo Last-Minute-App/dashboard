@@ -38,8 +38,8 @@ jobs:
       - name: Build
         env:
           # Override at Settings → Variables → Actions → VITE_API_BASE_URL
-          # if/when the backend moves to Railway. Default = Emergent preview.
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://expire-now.preview.emergentagent.com' }}
+          # if/when the backend moves. Default = Cloud Run API.
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://last-minute-app-904761941913.europe-west1.run.app' }}
         run: yarn build
 
       - name: SPA deep-link fallback

@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
-  'https://expire-now.preview.emergentagent.com';
+  'https://last-minute-app-904761941913.europe-west1.run.app';
 
 const TOKEN_KEY = 'lmd_jwt';
 

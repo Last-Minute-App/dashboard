@@ -6,7 +6,7 @@ two frontends (mobile + this).
 
 **Live**: https://last-minute-app.github.io/dashboard/
 **Mobile app** repo: separate.
-**API**: currently `https://expire-now.preview.emergentagent.com` (Emergent preview). Swap to a stable host (Railway / Render) when ready.
+**API**: currently `https://last-minute-app-904761941913.europe-west1.run.app` (Cloud Run).
 
 ## Roles
 
@@ -35,4 +35,4 @@ yarn build  # produces dist/, used by the GH Actions workflow
 ```
 
 The `VITE_API_BASE_URL` env var (in `.env`) controls which backend the SPA
-hits. Defaults to the Emergent preview URL.
+hits. Defaults to the Cloud Run API URL.
