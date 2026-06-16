@@ -5,12 +5,15 @@ import { RequireAuth } from './auth/RequireAuth';
 import AppShell from './layouts/AppShell';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import ProfilePage from './pages/ProfilePage';
 import ConsumerHome from './pages/consumer/ConsumerHome';
+import ConsumerClaims from './pages/consumer/ConsumerClaims';
 import PartnerHome from './pages/partner/PartnerHome';
+import PartnerOffers from './pages/partner/PartnerOffers';
+import PartnerClaims from './pages/partner/PartnerClaims';
 import AdminHome from './pages/admin/AdminHome';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminOffers from './pages/admin/AdminOffers';
-import PlaceholderPage from './pages/PlaceholderPage';
 
 export default function App() {
   return (
@@ -23,13 +26,13 @@ export default function App() {
         <Route element={<RequireAuth><AppShell /></RequireAuth>}>
           {/* CONSUMER ROOT (also default landing for unmatched roles) */}
           <Route path="/"        element={<RoleRouter />} />
-          <Route path="/claims"  element={<RequireAuth roles={['consumer']}><PlaceholderPage title="My claims" subtitle="Your active and historical claims will appear here." /></RequireAuth>} />
-          <Route path="/profile" element={<PlaceholderPage title="Profile" subtitle="Account, language, and preferences." />} />
+          <Route path="/claims"  element={<RequireAuth roles={['consumer']}><ConsumerClaims /></RequireAuth>} />
+          <Route path="/profile" element={<ProfilePage />} />
 
           {/* PARTNER */}
           <Route path="/partner"          element={<RequireAuth roles={['merchant']}><PartnerHome /></RequireAuth>} />
-          <Route path="/partner/offers"   element={<RequireAuth roles={['merchant']}><PlaceholderPage title="My offers" subtitle="Create, edit, and manage your live offers." /></RequireAuth>} />
-          <Route path="/partner/claims"   element={<RequireAuth roles={['merchant']}><PlaceholderPage title="Incoming claims" subtitle="Customer claims arrive here in real time." /></RequireAuth>} />
+          <Route path="/partner/offers"   element={<RequireAuth roles={['merchant']}><PartnerOffers /></RequireAuth>} />
+          <Route path="/partner/claims"   element={<RequireAuth roles={['merchant']}><PartnerClaims /></RequireAuth>} />
 
           {/* ADMIN */}
           <Route path="/admin"        element={<RequireAuth roles={['admin']}><AdminHome /></RequireAuth>} />

@@ -10,7 +10,30 @@ export interface User {
   business_category?: string | null;
   image?: string | null;
   language?: 'en' | 'el' | null;
+  created_at?: string | null;
+  street?: string | null;
+  street_number?: string | null;
+  postal_code?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  business_hours?: BusinessHours | null;
+  iban?: string | null;
+  account_holder_name?: string | null;
+  bank_name?: string | null;
+  vat_number?: string | null;
+  vat_country?: string | null;
+  merchant_latitude?: number | null;
+  merchant_longitude?: number | null;
+  formatted_address?: string | null;
 }
+
+export interface BusinessHoursDay {
+  closed: boolean;
+  open?: string | null;
+  close?: string | null;
+}
+
+export type BusinessHours = Partial<Record<'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun', BusinessHoursDay>>;
 
 export interface TokenResponse {
   access_token: string;
@@ -34,6 +57,11 @@ export async function register(payload: {
 
 export async function fetchMe(): Promise<User> {
   const { data } = await api.get<User>('/auth/me');
+  return data;
+}
+
+export async function updateMe(payload: Partial<User>): Promise<User> {
+  const { data } = await api.put<User>('/users/me', payload);
   return data;
 }
 
