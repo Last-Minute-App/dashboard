@@ -32,14 +32,14 @@ jobs:
           node-version: '20'
 
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: npm install
 
       - name: Build
         env:
           # Override at Settings → Variables → Actions → VITE_API_BASE_URL
           # if/when the backend moves. Default = Cloud Run API.
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://last-minute-app-904761941913.europe-west1.run.app' }}
-        run: yarn build
+        run: npm run build
 
       - name: SPA deep-link fallback
         # GH Pages serves 404.html for unknown paths; we copy index.html
