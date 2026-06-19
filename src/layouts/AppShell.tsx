@@ -44,9 +44,13 @@ export default function AppShell() {
     <div className="min-h-screen flex flex-col md:flex-row">
       <aside className="md:w-60 md:min-h-screen bg-ink-900 text-white md:flex md:flex-col md:flex-shrink-0">
         <div className="px-5 py-5 border-b border-white/10 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-sm font-bold">LM</div>
+          <img
+            src="/tiphop_logo.png"
+            alt="tiphop"
+            className="w-8 h-8 rounded-lg object-contain bg-white"
+          />
           <div>
-            <div className="font-bold text-sm leading-none">Last Minute</div>
+            <div className="font-bold text-sm leading-none">tiphop</div>
             <div className="text-xs text-white/60 mt-1">{roleLabel}</div>
           </div>
         </div>
@@ -79,7 +83,10 @@ export default function AppShell() {
 
       <main className="flex-1 min-w-0">
         <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-ink-100">
-          <Link to="/" className="font-bold text-ink-900">Last Minute</Link>
+          <Link to="/" className="flex items-center gap-2 font-bold text-ink-900">
+            <img src="/tiphop_logo.png" alt="tiphop" className="w-7 h-7 rounded-lg object-contain" />
+            tiphop
+          </Link>
           <button
             onClick={() => { logout(); navigate('/login', { replace: true }); }}
             className="text-sm text-brand-600 font-medium"

@@ -34,10 +34,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-brand-50 via-white to-ink-50">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand text-white text-2xl shadow-card mb-3">
-            ⏱️
-          </div>
-          <h1 className="text-2xl font-bold text-ink-900">Last Minute Dashboard</h1>
+          <img
+            src="/tiphop_logo.png"
+            alt="tiphop"
+            className="w-14 h-14 rounded-2xl object-contain bg-white shadow-card mb-3 mx-auto"
+          />
+          <h1 className="text-2xl font-bold text-ink-900">tiphop Dashboard</h1>
           <p className="text-ink-500 mt-1">Sign in to manage offers, claims, and analytics</p>
         </div>
 
@@ -61,7 +63,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required autoComplete="current-password"
               className="w-full px-3 py-2.5 rounded-lg border border-ink-300 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition"
-              placeholder="••••••••"
+              placeholder="********"
             />
           </div>
 
@@ -76,7 +78,7 @@ export default function LoginPage() {
             disabled={busy}
             className="w-full bg-brand hover:bg-brand-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition"
           >
-            {busy ? 'Signing in…' : 'Sign in'}
+            {busy ? 'Signing in...' : 'Sign in'}
           </button>
 
           <div className="text-center text-sm text-ink-500">
@@ -88,7 +90,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-xs text-ink-500 mt-6">
-          Consumers • Partners • Admins all log in here
+          Consumers - Partners - Admins all log in here
         </p>
       </div>
     </div>
