@@ -9,6 +9,8 @@ interface NavItem {
   icon: string;
 }
 
+const LOGO_SRC = `${import.meta.env.BASE_URL}tiphop_logo.png`;
+
 const MENUS: Record<Role, NavItem[]> = {
   consumer: [
     { label: 'Browse offers', to: '/', icon: 'B' },
@@ -45,7 +47,7 @@ export default function AppShell() {
       <aside className="md:w-60 md:min-h-screen bg-ink-900 text-white md:flex md:flex-col md:flex-shrink-0">
         <div className="px-5 py-5 border-b border-white/10 flex items-center gap-2">
           <img
-            src="/tiphop_logo.png"
+            src={LOGO_SRC}
             alt="tiphop"
             className="w-8 h-8 rounded-lg object-contain bg-white"
           />
@@ -84,7 +86,7 @@ export default function AppShell() {
       <main className="flex-1 min-w-0">
         <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-ink-100">
           <Link to="/" className="flex items-center gap-2 font-bold text-ink-900">
-            <img src="/tiphop_logo.png" alt="tiphop" className="w-7 h-7 rounded-lg object-contain" />
+            <img src={LOGO_SRC} alt="tiphop" className="w-7 h-7 rounded-lg object-contain" />
             tiphop
           </Link>
           <button
