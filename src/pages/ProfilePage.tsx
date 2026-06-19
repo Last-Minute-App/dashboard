@@ -1,14 +1,24 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { updateMe, User } from '../api/auth';
 import { extractErrorMessage } from '../api/client';
-import { BUSINESS_CATEGORIES } from '../api/platform';
+import { BUSINESS_CATEGORIES, syncFavoriteCategories } from '../api/platform';
 import { useAuth } from '../auth/AuthContext';
 
 type ProfileForm = Partial<Pick<User,
   'name' | 'image' | 'business_category' | 'street' | 'street_number' | 'postal_code' | 'city' |
   'phone' | 'iban' | 'account_holder_name' | 'bank_name' | 'vat_number' | 'vat_country' |
-  'merchant_latitude' | 'merchant_longitude' | 'formatted_address'
+  'merchant_latitude' | 'merchant_longitude' | 'formatted_address' | 'business_hours' | 'favorite_categories'
 >>;
+
+const DAYS = [
+  ['mon', 'Monday'],
+  ['tue', 'Tuesday'],
+  ['wed', 'Wednesday'],
+  ['thu', 'Thursday'],
+  ['fri', 'Friday'],
+  ['sat', 'Saturday'],
+  ['sun', 'Sunday'],
+] as const;
 
 export default function ProfilePage() {
   const { user, reloadMe } = useAuth();
@@ -36,6 +46,8 @@ export default function ProfilePage() {
       merchant_latitude: user.merchant_latitude ?? undefined,
       merchant_longitude: user.merchant_longitude ?? undefined,
       formatted_address: user.formatted_address || '',
+      business_hours: user.business_hours || {},
+      favorite_categories: user.favorite_categories || [],
     });
   }, [user]);
 
@@ -50,6 +62,9 @@ export default function ProfilePage() {
     setOk(null);
     try {
       await updateMe(cleanPayload(form));
+      if (user?.role === 'consumer') {
+        await syncFavoriteCategories(form.favorite_categories || []);
+      }
       await reloadMe();
       setOk('Profile updated.');
     } catch (error) {
@@ -60,6 +75,26 @@ export default function ProfilePage() {
   }
 
   if (!user) return null;
+
+  function toggleFavorite(category: string) {
+    const current = new Set(form.favorite_categories || []);
+    if (current.has(category)) current.delete(category);
+    else current.add(category);
+    set('favorite_categories', Array.from(current));
+  }
+
+  function setBusinessHour(day: typeof DAYS[number][0], field: 'closed' | 'open' | 'close', value: boolean | string) {
+    const current = form.business_hours || {};
+    set('business_hours', {
+      ...current,
+      [day]: {
+        closed: current[day]?.closed ?? false,
+        open: current[day]?.open ?? '09:00',
+        close: current[day]?.close ?? '17:00',
+        [field]: value,
+      },
+    });
+  }
 
   return (
     <div>
@@ -75,6 +110,25 @@ export default function ProfilePage() {
           <Field label="Email" value={user.email} disabled />
           <Field label="Image base64 or data URL" value={form.image || ''} onChange={(v) => set('image', v)} />
         </Section>
+
+        {user.role === 'consumer' && (
+          <section>
+            <h2 className="font-semibold text-ink-900 mb-3">Favorite categories</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {BUSINESS_CATEGORIES.map((category) => (
+                <label key={category} className="flex items-center gap-2 rounded-lg border border-ink-300 px-3 py-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={(form.favorite_categories || []).includes(category)}
+                    onChange={() => toggleFavorite(category)}
+                    className="h-4 w-4"
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+          </section>
+        )}
 
         {user.role === 'merchant' && (
           <>
@@ -98,6 +152,42 @@ export default function ProfilePage() {
               <Field label="Longitude" type="number" value={form.merchant_longitude ?? ''} onChange={(v) => set('merchant_longitude', v === '' ? undefined : Number(v))} />
               <Field label="Formatted address" value={form.formatted_address || ''} onChange={(v) => set('formatted_address', v)} />
             </Section>
+            <section>
+              <h2 className="font-semibold text-ink-900 mb-3">Business hours</h2>
+              <div className="space-y-2">
+                {DAYS.map(([day, label]) => {
+                  const hours = form.business_hours?.[day] || { closed: false, open: '09:00', close: '17:00' };
+                  return (
+                    <div key={day} className="grid grid-cols-1 sm:grid-cols-[120px_1fr_1fr_120px] gap-2 items-center rounded-lg border border-ink-200 px-3 py-2">
+                      <div className="text-sm font-medium text-ink-800">{label}</div>
+                      <input
+                        type="time"
+                        value={hours.open || '09:00'}
+                        disabled={hours.closed}
+                        onChange={(e) => setBusinessHour(day, 'open', e.target.value)}
+                        className="px-3 py-2 rounded-lg border border-ink-300 text-sm disabled:bg-ink-50"
+                      />
+                      <input
+                        type="time"
+                        value={hours.close || '17:00'}
+                        disabled={hours.closed}
+                        onChange={(e) => setBusinessHour(day, 'close', e.target.value)}
+                        className="px-3 py-2 rounded-lg border border-ink-300 text-sm disabled:bg-ink-50"
+                      />
+                      <label className="flex items-center gap-2 text-sm text-ink-700">
+                        <input
+                          type="checkbox"
+                          checked={!!hours.closed}
+                          onChange={(e) => setBusinessHour(day, 'closed', e.target.checked)}
+                          className="h-4 w-4"
+                        />
+                        Closed
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
             <Section title="Bank and tax">
               <Field label="IBAN" value={form.iban || ''} onChange={(v) => set('iban', v)} />
               <Field label="Account holder" value={form.account_holder_name || ''} onChange={(v) => set('account_holder_name', v)} />
@@ -168,6 +258,7 @@ function Field({
 function cleanPayload(form: ProfileForm): Partial<User> {
   const payload: Partial<User> = {};
   Object.entries(form).forEach(([key, value]) => {
+    if (key === 'favorite_categories') return;
     if (value === '' || value == null) return;
     (payload as Record<string, unknown>)[key] = value;
   });

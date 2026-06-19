@@ -10,6 +10,7 @@ export interface User {
   business_category?: string | null;
   image?: string | null;
   language?: 'en' | 'el' | null;
+  favorite_categories?: string[] | null;
   created_at?: string | null;
   street?: string | null;
   street_number?: string | null;
@@ -50,6 +51,21 @@ export async function register(payload: {
   email: string; password: string; name: string;
   role: 'consumer' | 'merchant';
   business_category?: string;
+  image?: string;
+  street?: string;
+  street_number?: string;
+  postal_code?: string;
+  city?: string;
+  phone?: string;
+  business_hours?: BusinessHours;
+  iban?: string;
+  account_holder_name?: string;
+  bank_name?: string;
+  vat_number?: string;
+  vat_country?: string;
+  merchant_latitude?: number;
+  merchant_longitude?: number;
+  formatted_address?: string;
 }): Promise<TokenResponse> {
   const { data } = await api.post<TokenResponse>('/auth/register', payload);
   return data;

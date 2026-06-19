@@ -62,8 +62,10 @@ export default function PartnerHome() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ActionCard title="Analytics" text="Review KPIs, trend buckets, top offers, revenue, and insights." to="/partner/analytics" />
             <ActionCard title="My offers" text="Create, edit, schedule, recur, cancel remaining stock, or delete offers." to="/partner/offers" />
             <ActionCard title="Incoming claims" text="Review customer claims and redeem them with verification codes." to="/partner/claims" />
+            <ActionCard title="QR verification" text="Validate a customer QR token and confirm redemption." to="/partner/scan" />
             <ActionCard title="Business profile" text="Keep business category, address, phone, tax, and bank details current." to="/profile" />
           </div>
         </div>

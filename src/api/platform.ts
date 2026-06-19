@@ -118,6 +118,61 @@ export interface BookmarkItem {
   offer: Pick<Offer, 'id' | 'title' | 'image' | 'category' | 'scheduled_start_time' | 'merchant_name'> | null;
 }
 
+export interface DiscoveryExpiredOffer {
+  id: string;
+  title: string;
+  image?: string | null;
+  category?: string | null;
+  merchant_name?: string | null;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  original_price: number;
+  expired_at: number;
+  distance_km: number;
+}
+
+export interface DiscoveryUpcomingOffer {
+  id: string;
+  title: string;
+  image?: string | null;
+  category?: string | null;
+  merchant_name?: string | null;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  original_price: number;
+  scheduled_start_time: number;
+  distance_km: number;
+}
+
+export interface DiscoveryNearbyBusiness {
+  id: string;
+  name: string;
+  business_category?: string | null;
+  image?: string | null;
+  distance_km: number;
+  formatted_address?: string | null;
+}
+
+export interface DiscoveryPayload {
+  recently_expired: DiscoveryExpiredOffer[];
+  claimed_today: number;
+  upcoming: DiscoveryUpcomingOffer[];
+  nearby_businesses: DiscoveryNearbyBusiness[];
+}
+
+export interface ScanPreview {
+  claim_id: string;
+  offer_id: string;
+  offer_title: string;
+  expiry_time: number | null;
+  customer_name_masked: string;
+  status: string;
+  redeemable: boolean;
+  block_reason: string | null;
+  verification_code: string | null;
+  redeemed_at: number | null;
+}
+
 export interface NearbyOptions {
   q?: string;
   category?: string;
@@ -140,6 +195,13 @@ export async function getOffer(id: string, lat?: number, lng?: number): Promise<
   return data;
 }
 
+export async function getDiscovery(lat: number, lng: number, radius = 10, category?: string): Promise<DiscoveryPayload> {
+  const params: Record<string, string | number> = { lat, lng, radius };
+  if (category?.trim()) params.category = category.trim();
+  const { data } = await api.get<DiscoveryPayload>('/explore/discovery', { params });
+  return data;
+}
+
 export async function claimOffer(id: string): Promise<Claim> {
   const { data } = await api.post<Claim>(`/offers/${id}/claim`);
   return data;
@@ -158,6 +220,11 @@ export async function unbookmarkOffer(id: string): Promise<{ bookmarked: boolean
 export async function listBookmarks(): Promise<BookmarkItem[]> {
   const { data } = await api.get<{ bookmarks: BookmarkItem[] }>('/me/offer-bookmarks');
   return data.bookmarks;
+}
+
+export async function syncFavoriteCategories(categories: string[]): Promise<{ success: boolean; categories: string[] }> {
+  const { data } = await api.put<{ success: boolean; categories: string[] }>('/me/favorite-categories', { categories });
+  return data;
 }
 
 export async function listMyClaims(): Promise<Claim[]> {
@@ -206,6 +273,11 @@ export async function redeemClaim(id: string, verificationCode?: string): Promis
   return data;
 }
 
+export async function scanClaimToken(token: string): Promise<ScanPreview> {
+  const { data } = await api.post<ScanPreview>('/claims/scan', { token });
+  return data;
+}
+
 export async function generateRecurringOffers(): Promise<{ created: number; date: string }> {
   const { data } = await api.post<{ created: number; date: string }>('/merchant/generate-recurring');
   return data;
@@ -216,8 +288,8 @@ export async function toggleRecurringOffer(id: string): Promise<{ offer_id: stri
   return data;
 }
 
-export async function merchantAnalytics(): Promise<MerchantAnalytics> {
-  const { data } = await api.get<MerchantAnalytics>('/merchant/analytics');
+export async function merchantAnalytics(params: Record<string, string | number> = {}): Promise<MerchantAnalytics> {
+  const { data } = await api.get<MerchantAnalytics>('/merchant/analytics', { params });
   return data;
 }
 
