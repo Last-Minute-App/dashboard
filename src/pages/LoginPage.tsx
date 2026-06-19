@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { extractErrorMessage } from '../api/client';
-
-const LOGO_SRC = `${import.meta.env.BASE_URL}tiphop_logo.png`;
+import tiphopLogo from '../assets/tiphop_logo.png';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -37,7 +36,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img
-            src={LOGO_SRC}
+            src={tiphopLogo}
             alt="tiphop"
             className="w-14 h-14 rounded-2xl object-contain bg-white shadow-card mb-3 mx-auto"
           />
