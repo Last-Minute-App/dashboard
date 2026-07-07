@@ -1,38 +1,31 @@
-# Last Minute — Dashboard
+# tiphop dashboard deployment
 
-Web dashboard for the Last Minute platform. Talks to the same FastAPI
-backend and MongoDB Atlas cluster the mobile app uses — one DB, one API,
-two frontends (mobile + this).
+This repository publishes the same installable PWA built from the
+`mobile-app` repository. The standalone Vite dashboard has been removed;
+the build syncs the Expo mobile PWA into `dist/` so users see the same app at:
 
-**Live**: https://last-minute-app.github.io/dashboard/
-**Mobile app** repo: separate.
-**API**: currently `https://last-minute-app-904761941913.europe-west1.run.app` (Cloud Run).
+https://last-minute-app.github.io/dashboard/
 
-## Roles
+## Build
 
-| Role | Lands on | Can do |
-|---|---|---|
-| `consumer` | `/` | Browse offers, claim, view bookmarks (v2) |
-| `merchant` (aka **Partner**) | `/partner` | Create / edit offers, see incoming claims, redeem |
-| `admin` | `/admin` | Platform stats, user ban/unban, force-delete offers |
+From the combined workspace:
 
-Admins cannot self-register. They are created via the `ADMIN_EMAIL` /
-`ADMIN_PASSWORD` env vars on the backend at startup.
-
-## Stack
-
-- Vite + React 18 + TypeScript + Tailwind
-- React Router v6 (deep-link aware on GH Pages via `404.html` trick)
-- Axios for API, Zustand standby for state, Recharts for charts (v2)
-- Auto-deploys to GH Pages on every push to `main`
-
-## Local development
-
-```bash
-yarn install
-yarn dev    # http://localhost:3001/dashboard/
-yarn build  # produces dist/, used by the GH Actions workflow
+npm run build
 ```
 
-The `VITE_API_BASE_URL` env var (in `.env`) controls which backend the SPA
-hits. Defaults to the Cloud Run API URL.
+`npm run build` expects this folder and `../mobile-app` to be siblings. It
+runs `mobile-app`'s PWA export with `EXPO_PUBLIC_WEB_BASE_PATH=/dashboard`,
+then copies `../mobile-app/dist-pwa` to this repo's `dist/`.
+
+## Deployment
+
+The GitHub Pages workflow checks out both repositories:
+
+- `Last-Minute-App/dashboard`
+- `Last-Minute-App/mobile-app`
+
+It installs both projects, runs this repo's `npm run build`, and publishes
+`dashboard/dist`.
+
+Set `EXPO_PUBLIC_BACKEND_URL` in GitHub Actions variables if the API URL
+changes. The default is the current Cloud Run API URL.
