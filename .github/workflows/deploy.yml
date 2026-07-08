@@ -28,6 +28,7 @@ jobs:
         with:
           repository: Last-Minute-App/mobile-app
           path: mobile-app
+          token: ${{ secrets.MOBILE_APP_READ_TOKEN || github.token }}
 
       - uses: actions/setup-node@v4
         with:
