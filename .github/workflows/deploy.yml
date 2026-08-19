@@ -36,7 +36,11 @@ jobs:
 
       - name: Install mobile dependencies
         working-directory: mobile-app
-        run: npm ci
+        # npm install (not npm ci) so the build tolerates lockfile drift from
+        # devDependencies added without a regenerated package-lock.json (e.g.
+        # the jest test toolchain). Mirrors verify.yml, which uses the same
+        # approach and is why type-check/lint/tests stay green.
+        run: npm install --no-audit --no-fund
 
       - name: Build mobile PWA for /dashboard
         working-directory: dashboard
