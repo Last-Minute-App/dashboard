@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ubuntu-latest becomes Ubuntu 26 on 2026-10-19
     steps:
       - name: Checkout dashboard
         uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # pinned: ubuntu-latest becomes Ubuntu 26 on 2026-10-19
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
