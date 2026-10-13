@@ -45,7 +45,7 @@ jobs:
       - name: Build mobile PWA for /dashboard
         working-directory: dashboard
         env:
-          EXPO_PUBLIC_BACKEND_URL: ${{ vars.EXPO_PUBLIC_BACKEND_URL || 'https://last-minute-app-904761941913.europe-west1.run.app' }}
+          EXPO_PUBLIC_BACKEND_URL: ${{ vars.EXPO_PUBLIC_BACKEND_URL || 'https://api-970513392417.europe-west1.run.app' }}
           EXPO_PUBLIC_WEB_BASE_PATH: /dashboard
         run: npm run build
 
