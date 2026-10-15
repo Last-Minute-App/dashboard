@@ -28,6 +28,9 @@ jobs:
         with:
           repository: Last-Minute-App/mobile-app
           path: mobile-app
+          # Normally the newest main. Setting the repository variable MOBILE_APP_REF to a commit or tag builds exactly that
+          # one instead (a rollback, or holding back unreleased commits) - then clear the variable.
+          ref: ${{ vars.MOBILE_APP_REF || 'main' }}
           token: ${{ secrets.MOBILE_APP_READ_TOKEN || github.token }}
 
       - uses: actions/setup-node@v4
@@ -41,6 +44,18 @@ jobs:
         # the jest test toolchain). Mirrors verify.yml, which uses the same
         # approach and is why type-check/lint/tests stay green.
         run: npm install --no-audit --no-fund
+
+      # Only a commit that passes the app's own checks is published (audit 2026-10-15: this workflow used to build whatever was
+      # newest on the app's main, tested or not, while the API's deploy has been gated since 2026-10-13). Same commands as the
+      # app's Verify workflow, run on the exact commit that is about to be built. A failure stops here and the live site stays as it is.
+      - name: Gate - the app commit being built (guards, types, unit tests)
+        working-directory: mobile-app
+        run: |
+          echo "Building app commit $(git rev-parse HEAD)"
+          echo "### App commit built: $(git rev-parse --short HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/verify-all.py
+          npx tsc --noEmit
+          npm test
 
       - name: Build mobile PWA for /dashboard
         working-directory: dashboard
