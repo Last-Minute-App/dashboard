@@ -35,7 +35,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # 22 = the version the app's own CI (mobile verify.yml) tests with; Node 20 reached end of life in April 2026.
+          node-version: "22"
 
       - name: Install mobile dependencies
         working-directory: mobile-app
