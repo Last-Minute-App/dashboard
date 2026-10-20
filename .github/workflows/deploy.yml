@@ -40,11 +40,12 @@ jobs:
 
       - name: Install mobile dependencies
         working-directory: mobile-app
-        # npm install (not npm ci) so the build tolerates lockfile drift from
-        # devDependencies added without a regenerated package-lock.json (e.g.
-        # the jest test toolchain). Mirrors verify.yml, which uses the same
-        # approach and is why type-check/lint/tests stay green.
-        run: npm install --no-audit --no-fund
+        # npm ci: install EXACTLY what package-lock.json records, so a package published today can never reach the live app
+        # (security review 2026-10-20 #4; the admin dashboard holds admin tokens). It used to be `npm install` because the
+        # lockfile lacked the jest devDependencies (2026-08-19); the lockfile is complete now (verified 2026-10-20 with npm 10,
+        # the version Node 22 ships). If someone adds a dependency without committing the lockfile, THIS step fails loudly and
+        # the live site stays as it is - fix it with `npm install` in the app and commit package-lock.json.
+        run: npm ci --no-audit --no-fund
 
       # Only a commit that passes the app's own checks is published (audit 2026-10-15: this workflow used to build whatever was
       # newest on the app's main, tested or not, while the API's deploy has been gated since 2026-10-13). Same commands as the
