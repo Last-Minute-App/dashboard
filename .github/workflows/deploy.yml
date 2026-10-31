@@ -31,6 +31,10 @@ jobs:
           # Normally the newest main. Setting the repository variable MOBILE_APP_REF to a commit or tag builds exactly that
           # one instead (a rollback, or holding back unreleased commits) - then clear the variable.
           ref: ${{ vars.MOBILE_APP_REF || 'main' }}
+          # Preferred: a read-only DEPLOY KEY on the app repo (secret MOBILE_APP_DEPLOY_KEY) - not tied to any person, so it keeps
+          # working when someone leaves (the old personal token died with its owner on 2026-10-31 and the v593 deploy failed 403).
+          # While that secret is empty the old token below is used, so nothing changes until the key is added.
+          ssh-key: ${{ secrets.MOBILE_APP_DEPLOY_KEY }}
           token: ${{ secrets.MOBILE_APP_READ_TOKEN || github.token }}
 
       - uses: actions/setup-node@v4
