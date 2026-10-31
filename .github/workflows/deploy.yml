@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-24.04  # pinned: ubuntu-latest becomes Ubuntu 26 on 2026-10-19
     steps:
       - name: Checkout dashboard
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: dashboard
 
       - name: Checkout mobile app
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: Last-Minute-App/mobile-app
           path: mobile-app
@@ -37,7 +37,7 @@ jobs:
           ssh-key: ${{ secrets.MOBILE_APP_DEPLOY_KEY }}
           token: ${{ secrets.MOBILE_APP_READ_TOKEN || github.token }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # 22 = the version the app's own CI (mobile verify.yml) tests with; Node 20 reached end of life in April 2026.
           node-version: "22"
@@ -74,11 +74,13 @@ jobs:
         working-directory: dashboard
         run: cp dist/index.html dist/404.html
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dashboard/dist
+          # v3 published dotfiles too (v4+ drop them unless asked): keep what is published exactly as before.
+          include-hidden-files: true
 
   deploy:
     needs: build
@@ -88,4 +90,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
